@@ -19,13 +19,16 @@ class Game {
         this.boardWidth = width;
         this.drawPixel = drawCallback
 
+        this.board = [];
+        this.nextBoard = [];
+
         for (let x = 0; x < this.boardWidth; x++) {
             const line: boolean[] = [];
             const nextLine: boolean[] = [];
             this.board.push(line);
             this.nextBoard.push(nextLine);
             for (let y = 0; y < this.boardHeight; y++) {
-                line.push(Math.random()*100 <= 3);
+                line.push(Math.random()*100 <= 30);
                 nextLine.push(false);
             }
         }
@@ -57,11 +60,10 @@ class Game {
 
     private calcLife(): void {
 
-        const isAlive = (x: number, y: number) => {
+        const isAlive = (x: number, y: number): 1 | 0 => {
             if (!this.inBoard(x,y)){
                 return 0;
             }
-
             return this.board[x][y] ? 1:0;
         }
 
@@ -71,16 +73,13 @@ class Game {
                     isAlive(x-1,y+1) + isAlive(x,y+1) + isAlive(x+1,y+1) +
                     isAlive(x-1,y) + isAlive(x+1,y) +
                     isAlive(x-1,y-1) + isAlive(x,y-1) + isAlive(x+1,y-1);
-
-
-                if (neighbours < 2 || neighbours > 3) {
+                if ( neighbours < 2 || neighbours > 3) {
                     this.nextBoard[x][y] = false;
                 } else if (neighbours === 3) {
                     this.nextBoard[x][y] = true;
                 } else {
                     this.nextBoard[x][y] = this.board[x][y];
                 }
-
             }
         }
     }
@@ -109,9 +108,7 @@ class Game {
             this.running = false;
         }
     }
-
 }
-
 
 window.onload = () => {
 
@@ -140,13 +137,14 @@ window.onload = () => {
 
     game.start();
 
-    function displayFps() {
+    const displayFps = () => {
         debug.innerText = 'FPS: ' + game.fps.toFixed(2);
         setTimeout(displayFps, 500);
     }
 
-    displayFps();
-
+    const toPixelSpace = (x: number, y: number):[number, number] => {
+        return [Math.floor(x / pixelSize), Math.floor(y / pixelSize)];
+    };
 
     const stopBtn = <HTMLElement>document.getElementById('btn-stop');
     const startBtn = <HTMLElement>document.getElementById('btn-start');
@@ -167,11 +165,15 @@ window.onload = () => {
 
     canvas.addEventListener('mousemove', ev => {
         if (game.paused && ev.buttons > 0) {
-            game.wakeupCell(Math.floor(ev.offsetX / pixelSize), Math.floor(ev.offsetY / pixelSize));
+            game.wakeupCell(...toPixelSpace(ev.offsetX, ev.offsetY));
         }
-    })
+    });
 
+    canvas.addEventListener('mousedown', ev => {
+        if (game.paused) {
+            game.wakeupCell(...toPixelSpace(ev.offsetX, ev.offsetY));
+        }
+    });
 
-
-
+    displayFps();
 };
