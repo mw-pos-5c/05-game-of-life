@@ -28,7 +28,8 @@ class Game {
             this.board.push(line);
             this.nextBoard.push(nextLine);
             for (let y = 0; y < this.boardHeight; y++) {
-                line.push(Math.random()*100 <= 30);
+                //line.push(Math.random()*100 <= 30);
+                line.push(false);
                 nextLine.push(false);
             }
         }
@@ -73,13 +74,20 @@ class Game {
                     isAlive(x-1,y+1) + isAlive(x,y+1) + isAlive(x+1,y+1) +
                     isAlive(x-1,y) + isAlive(x+1,y) +
                     isAlive(x-1,y-1) + isAlive(x,y-1) + isAlive(x+1,y-1);
-                if ( neighbours < 2 || neighbours > 3) {
+
+                if (neighbours % 2 != 0) {
+                    this.nextBoard[x][y] = true;
+                } else {
+                    this.nextBoard[x][y] = false;
+                }
+
+/*                if ( neighbours < 2 || neighbours > 3) {
                     this.nextBoard[x][y] = false;
                 } else if (neighbours === 3) {
                     this.nextBoard[x][y] = true;
                 } else {
                     this.nextBoard[x][y] = this.board[x][y];
-                }
+                }*/
             }
         }
     }
@@ -103,7 +111,10 @@ class Game {
         this.lastDraw = now;
 
         if (!this.paused) {
-            window.requestAnimationFrame(() => this.draw());
+            setTimeout(() => {
+                window.requestAnimationFrame(() => this.draw());
+            }, 200)
+
         } else {
             this.running = false;
         }
@@ -116,7 +127,7 @@ window.onload = () => {
     const debug = <HTMLElement>document.getElementById('debug');
     const ctx = <CanvasRenderingContext2D>canvas.getContext('2d', { alpha: false });
 
-    const pixelSize = 10;
+    const pixelSize = 4;
     const boardWidth = Math.floor(canvas.clientWidth / pixelSize);
     const boardHeight = Math.floor(canvas.clientHeight / pixelSize);
 
@@ -135,7 +146,7 @@ window.onload = () => {
         ctx.fillRect(pixelSize*x, pixelSize*y, pixelSize, pixelSize);
     });
 
-    game.start();
+    //game.start();
 
     const displayFps = () => {
         debug.innerText = 'FPS: ' + game.fps.toFixed(2);
