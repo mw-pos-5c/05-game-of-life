@@ -1,5 +1,8 @@
 
 class Game {
+
+    private cellRatio = 0;
+
     private boardWidth = 0;
     private boardHeight = 0;
     private running = false;
@@ -28,8 +31,8 @@ class Game {
             this.board.push(line);
             this.nextBoard.push(nextLine);
             for (let y = 0; y < this.boardHeight; y++) {
-                //line.push(Math.random()*100 <= 30);
-                line.push(false);
+                line.push(Math.random()*100 <= this.cellRatio);
+                //line.push(false);
                 nextLine.push(false);
             }
         }
@@ -62,8 +65,16 @@ class Game {
     private calcLife(): void {
 
         const isAlive = (x: number, y: number): 1 | 0 => {
-            if (!this.inBoard(x,y)){
-                return 0;
+            if (x < 0) {
+                x += this.boardWidth
+            } else if (x >= this.boardWidth) {
+                x -= this.boardWidth;
+            }
+
+            if (y < 0) {
+                y += this.boardHeight;
+            } else if (y >= this.boardHeight) {
+                y -= this.boardHeight;
             }
             return this.board[x][y] ? 1:0;
         }
@@ -75,19 +86,19 @@ class Game {
                     isAlive(x-1,y) + isAlive(x+1,y) +
                     isAlive(x-1,y-1) + isAlive(x,y-1) + isAlive(x+1,y-1);
 
-                if (neighbours % 2 != 0) {
-                    this.nextBoard[x][y] = true;
-                } else {
-                    this.nextBoard[x][y] = false;
-                }
+                // if (neighbours % 2 != 0) {
+                //     this.nextBoard[x][y] = true;
+                // } else {
+                //     this.nextBoard[x][y] = false;
+                // }
 
-/*                if ( neighbours < 2 || neighbours > 3) {
+                if ( neighbours < 2 || neighbours > 3) {
                     this.nextBoard[x][y] = false;
                 } else if (neighbours === 3) {
                     this.nextBoard[x][y] = true;
                 } else {
                     this.nextBoard[x][y] = this.board[x][y];
-                }*/
+                }
             }
         }
     }
@@ -111,10 +122,7 @@ class Game {
         this.lastDraw = now;
 
         if (!this.paused) {
-            setTimeout(() => {
-                window.requestAnimationFrame(() => this.draw());
-            }, 200)
-
+            window.requestAnimationFrame(() => this.draw());
         } else {
             this.running = false;
         }
@@ -127,13 +135,18 @@ window.onload = () => {
     const debug = <HTMLElement>document.getElementById('debug');
     const ctx = <CanvasRenderingContext2D>canvas.getContext('2d', { alpha: false });
 
-    const pixelSize = 4;
-    const boardWidth = Math.floor(canvas.clientWidth / pixelSize);
-    const boardHeight = Math.floor(canvas.clientHeight / pixelSize);
+    const pixelSize = 5; // ----------------------------------< Pixel Size
+    const canvasHeight = canvas.clientHeight;
+    const canvasWidth = canvas.clientWidth;
+
+    const boardWidth = Math.floor(canvasWidth / pixelSize);
+    const boardHeight = Math.floor(canvasHeight / pixelSize);
 
 
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    console.log(boardWidth, boardHeight);
 
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -146,7 +159,7 @@ window.onload = () => {
         ctx.fillRect(pixelSize*x, pixelSize*y, pixelSize, pixelSize);
     });
 
-    //game.start();
+    game.start();
 
     const displayFps = () => {
         debug.innerText = 'FPS: ' + game.fps.toFixed(2);

@@ -7,27 +7,59 @@
 </head>
 
 <body>
-<span id="debug"></span>
-<h1>Game of Life</h1>
-<button id="btn-start">Start</button>
-<button id="btn-stop">Stop</button>
-<button id="btn-next">Next</button>
-<div class="anti-burn">
+
+
+<div class="container">
     <canvas id="canvas"></canvas>
+</div>
+
+<div class="controls">
+    <span id="debug"></span>
+    <h1>Game of Life</h1>
+    <button id="btn-start">Start</button>
+    <button id="btn-stop">Stop</button>
+    <button id="btn-next">Next</button>
 </div>
 
 </body>
 
 <style>
 
-    .anti-burn {
+    * {
+        user-select: none;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    .controls {
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        width: 250px;
+        background: gray;
+        border-radius: 5px;
+
+        padding: 15px;
 
     }
 
+    .container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
     canvas {
-        border: black solid 4px;
-        height: 80vh;
-        width: 90vw;
+        width: inherit;
+        height: inherit;
+        z-index: 1;
+
     }
 </style>
 
