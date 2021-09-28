@@ -1,7 +1,7 @@
 
 class Game {
 
-    private cellRatio = 0;
+    private cellRatio = 3;
 
     private boardWidth = 0;
     private boardHeight = 0;
@@ -13,7 +13,7 @@ class Game {
     private nextBoard: boolean[][] = [];
     private drawPixel: (alive: boolean, x: number, y: number) => void = () => {};
 
-    paused = false;
+    paused = true;
     fps = 0;
 
     init(width: number, height: number, drawCallback: (alive: boolean, x: number, y: number) => void): void {
@@ -81,7 +81,7 @@ class Game {
 
         for (let x = 0; x < this.boardWidth; x++) {
             for (let y = 0; y < this.boardHeight; y++) {
-                const neighbours =
+                const neighbors =
                     isAlive(x-1,y+1) + isAlive(x,y+1) + isAlive(x+1,y+1) +
                     isAlive(x-1,y) + isAlive(x+1,y) +
                     isAlive(x-1,y-1) + isAlive(x,y-1) + isAlive(x+1,y-1);
@@ -92,9 +92,9 @@ class Game {
                 //     this.nextBoard[x][y] = false;
                 // }
 
-                if ( neighbours < 2 || neighbours > 3) {
+                if ( neighbors < 2 || neighbors > 3) {
                     this.nextBoard[x][y] = false;
-                } else if (neighbours === 3) {
+                } else if (neighbors === 3) {
                     this.nextBoard[x][y] = true;
                 } else {
                     this.nextBoard[x][y] = this.board[x][y];
@@ -159,7 +159,6 @@ window.onload = () => {
         ctx.fillRect(pixelSize*x, pixelSize*y, pixelSize, pixelSize);
     });
 
-    game.start();
 
     const displayFps = () => {
         debug.innerText = 'FPS: ' + game.fps.toFixed(2);
@@ -200,4 +199,5 @@ window.onload = () => {
     });
 
     displayFps();
+    game.start();
 };
